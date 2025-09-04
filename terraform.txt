@@ -1,1 +1,1 @@
-welcome to online class for devops
+welcome to online class for azure devops
