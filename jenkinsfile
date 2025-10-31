@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
+        IMAGE_NAME = "yourdockerhubusername/flask-jenkins-docker"
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/yourusername/flask-jenkins-docker.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+        stage('Push to DockerHub') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push $IMAGE_NAME'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'docker run -d -p 5000:5000 $IMAGE_NAME'
+            }
+        }
+    }
+}
+
